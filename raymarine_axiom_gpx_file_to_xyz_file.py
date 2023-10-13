@@ -16,7 +16,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from datetime import datetime, timedelta
 
-
+#replace the following paths with your personal paths:
 gpx_file_path = r"C:\Users\Beltis\Documents\LH_expedito\Teste.gpx"
 tide_file_path= r"C:\Users\Beltis\Documents\LH_expedito\tide_test.xlsx"
 
