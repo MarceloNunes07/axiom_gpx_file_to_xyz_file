@@ -1,7 +1,7 @@
 # axiom_gpx_file_to_xyz_file
 Step-by-step guide on how to use Track information registered on a Raymarine Axiom MFD to build a XYZ file, which may be used to prepare a personal non-oficial bathymetric map, specially for non-surveyed areas or for regions with outdated survey
 
-Important: this method has limitations and it is not intended to replace a formal survey process, which is executed with much higher degree of accuracy. On the other hand, the formal method is generally very expensive, being not feasible in some instances. The present process is therefore recommended if you have a particular area that has either no bathymetric information, or for regions with outdated survey (more common in developing countries). The outcomes must be used with caution, and we recommend that you consider adding some margin of safety to the final results.
+Important: this method has limitations and it is not intended to replace a formal survey process, which is executed with much higher degree of accuracy. On the other hand, the formal method is generally very expensive, being not feasible in some instances. The present process is therefore recommended if you have a particular area that has either no bathymetric information, or for regions with outdated survey (more common in developing countries). The outcomes must be used with caution, and we recommend that you consider adding some margin of safety to the final results (they will be more reliable in sheltered regions, where boat movements due to the waves' action are reduced).
 
 The full process is divided into three major parts:
 1. Collecting the data and saving it on a MicroSD as a GPX file.
