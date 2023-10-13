@@ -9,7 +9,7 @@ The full process is divided into three major parts:
 3. Use the XYZ file with a GIS Software (e.g. QGIS) to create your bathymetric map.
 
 
-1. The first stage will be conducted on board your boat:
+- The first stage will be conducted on board your boat:
 a) sail towards the place you intend to register the depth data.
 b) On your AXIOM MFD, having a MicroSD on it, go to Home >> My Data >> Tracks
 c) Choose the "time" option and set the interval to "2 seconds".
@@ -21,6 +21,6 @@ h) On your AXIOM MFD, go to Home >> My data >> import/export >> Button "Save my 
 i) Select Eject card to safely remove the memory card
 j) Remove your MicroSD from your AXIOM MFD and copy the file to your personal notebook. Then return the MicroSD to your AXIOM MFD.
 
-2. Having your GPX file, you will be able to use the python algorithm to extract the desired details. You will also need the time you have started your survey (t0); your boat's draft (vertical distance between your transducer and the waterlevel); and the tide information between t0 and tn (n is the number of observations. By using the script, you will receive as outcome the XYZ file, that can be used in a GIS software to prepare a map.
+- Having your GPX file, you will be able to use the python algorithm to extract the desired details. You will also need the time you have started your survey (t0); your boat's draft (vertical distance between your transducer and the waterlevel); and the tide information between t0 and tn (n is the number of observations. By using the script, you will receive as outcome the XYZ file, that can be used in a GIS software to prepare a map.
 
-3. Import the XYZ file to a GIS software, such as QGIS, and use it as a base for building bathymetric map for your region of interest. When importing the file, you have to define the X and Y columns as the geographic coordinates, and Z as the feature that will be used for the maps (interpolation methods may be used) 
+- Import the XYZ file to a GIS software, such as QGIS, and use it as a base for building bathymetric map for your region of interest. When importing the file, you have to define the X and Y columns as the geographic coordinates, and Z as the feature that will be used for the maps (interpolation methods may be used) 
