@@ -57,6 +57,7 @@ is imported from an Excel file containing only two columns: datetime, and
 tide height):
 """
 tide=pd.read_excel(tide_file_path)
+tide['datetime']=tide['datetime'].dt.floor('min')
     
 
 # Parse the GPX file
