@@ -16,9 +16,8 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from datetime import datetime, timedelta
 
-
-gpx_file_path = r"C:\Users\Beltis\Documents\LH_expedito\iate_clube\IateClube.gpx"
-tide_file_path= r"C:\Users\Beltis\Documents\LH_expedito\iate_clube\tide_12_08_2024.xlsx"
+gpx_file_path = r"C:\Users\Beltis\Documents\LH_expedito\106_20_05_2025\106_20_05_2025.gpx"
+tide_file_path= r"C:\Users\Beltis\Documents\LH_expedito\106_20_05_2025\tide_20_05_2025.xlsx"
 
 """
 Creating an empty DataFrame to receive the XYZ data
@@ -32,33 +31,32 @@ and the Depth column receives the calculated depth, based on the sounder reading
 boat's draft and tide height.
 """
 
-columns=["Seconds","Time","Latitude","Longitude","Echo_Sounder","Depth"]
-xyz_root=pd.DataFrame(columns=columns)
+columns = ["Seconds", "Time", "Latitude", "Longitude", "Echo_Sounder", "Depth"]
+xyz_root = pd.DataFrame(columns=columns)
 
-#time step in seconds, which must be similar to the time step used on AXIOM MFD,
-#when starting the track log
-time_step=2
-#creating a time_counter variable to serve as a "counter", identifying the moment that
-#each observation has been collected, in seconds from t0.
-time_counter=0
-#t0 variable registering the initial moment of the survey:
-t0=datetime(2024,8,12,9,48,0)
+# Time step in seconds, which must be similar to the time step used on AXIOM MFD,
+# when starting the track log
+time_step = 2
+# Creating a time_counter variable to serve as a "counter", identifying the moment that
+# each observation has been collected, in seconds from t0.
+time_counter = 0
+# t0 variable registering the initial moment of the survey:
+t0 = datetime(2025, 5, 20, 14, 13, 0)
 
-#To get the depth information, it is necessary to consider the boat's draft
-#and the tidal height during the moments you have obtained the data
+# To get the depth information, it is necessary to consider the boat's draft
+# and the tidal height during the moments you have obtained the data
 
-#vertical distance from the transducer level to the water level:
-boat_draft=0.8
+# Vertical distance from the transducer level to the water level:
+boat_draft = 0.8
 
 """
-importing the tidal information (data information for every minute) that will
+Importing the tidal information (data information for every minute) that will
 be used to obtain the real depth (on this particular example, the tidal info
 is imported from an Excel file containing only two columns: datetime, and 
 tide height):
 """
-tide=pd.read_excel(tide_file_path)
-
-tide['datetime']=tide['datetime'].dt.floor('min')
+tide = pd.read_excel(tide_file_path)
+tide['datetime'] = tide['datetime'].dt.floor('min')
 
 # Parse the GPX file
 tree = ET.parse(gpx_file_path)
@@ -81,8 +79,8 @@ for track in tracks:
                 # Adjust the namespace for raymarine elements
                 ns_raymarine = "{http://www.raymarine.com}"
                 track_point_extension = extensions.find(f".//{ns_raymarine}TrackPointExtension")
-                #several data points missed the water depth reading, and hence
-                #we need to discard them:
+                # Several data points missed the water depth reading, and hence
+                # we need to discard them:
                 if track_point_extension is not None:
                     try:
                         water_depth = float(track_point_extension.findtext(f".//{ns_raymarine}WaterDepth"))
@@ -92,75 +90,42 @@ for track in tracks:
                     continue
             else:
                 continue
-            
-            #analyzing the data, it was verified that when the echo sounder
-            #reading showed "2.16", there was a problem with the data reading
-            #therefore, we need to dismiss the data point:
-            if water_depth==2.16:
+
+            # Analyzing the data, it was verified that when the echo sounder
+            # reading showed "2.16", there was a problem with the data reading
+            # therefore, we need to dismiss the data point:
+            if water_depth == 2.16:
                 continue
-            
-            #adding the amount of seconds from t0 to the real time:
-            time_obs=t0+timedelta(seconds=time_counter)
-            
-            #getting the tide height for each observation moment:
-            tide_height=tide['tide'][tide['datetime']==time_obs.replace(second=0,microsecond=0)]
-            
-           
-            try:
-                #calculating the real depth, based on the boat's draft and on the tide height:
-                real_depth=water_depth+boat_draft-tide_height[0]
-                
-                # new DataFrame with the new data point
-                new_data = pd.DataFrame([{
-                    "Seconds": time_counter,
-                    "Time": time_obs,
-                    "Latitude": lat,
-                    "Longitude": lon,
-                    "Echo_Sounder": water_depth,
-                    "Depth": real_depth
-                }])
-                
-                # Concatenate the new data with the existing DataFrame
-                xyz_root = pd.concat([xyz_root, new_data], ignore_index=True)
-                
-                #increasing the time variable according to the time_step:
-                time_counter+=time_step
-            except:
-                #calculating the real depth, based on the boat's draft and on the tide height:
-                real_depth=water_depth+boat_draft-tide_height
-                                              
-                for value in real_depth:
-                    real_depth_value=value
-             
-                # new DataFrame with the new data point
-                new_data = pd.DataFrame([{
-                    "Seconds": time_counter,
-                    "Time": time_obs,
-                    "Latitude": lat,
-                    "Longitude": lon,
-                    "Echo_Sounder": water_depth,
-                    "Depth": real_depth
-                }])
-                
-                # Concatenate the new data with the existing DataFrame
-                xyz_root = pd.concat([xyz_root, new_data], ignore_index=True)
-             
-                #increasing the time variable according to the time_step:
-                time_counter+=time_step
-                    
 
+            # Adding the amount of seconds from t0 to the real time:
+            time_obs = t0 + timedelta(seconds=time_counter)
 
-#getting the xyz file (only coordinates and depth info)
-xyz=xyz_root[['Latitude','Longitude','Depth']]
+            # Getting the tide height for each observation moment
+            tide_match = tide[tide['datetime'] == time_obs.replace(second=0, microsecond=0)]
+            if tide_match.empty:
+                continue  # skip if no tide match
+            tide_height = tide_match['tide'].values[0]  # ✅ CORREÇÃO: extrair valor escalar da maré
 
-def convert_to_float(value):
-    # Check if the value is a Series
-    if isinstance(value, pd.Series):
-        return value.iloc[0]  # Convert Series to float by taking the first element
-    return value  # Return the value unchanged if it's already a float
+            # Calculating the real depth, based on the boat's draft and on the tide height:
+            real_depth = water_depth + boat_draft - tide_height
 
-# Apply the conversion function to the 'Depth' column
-xyz['Depth'] = xyz['Depth'].apply(convert_to_float)
+            # Build the new row as a dict
+            new_row = {
+                "Seconds": time_counter,
+                "Time": time_obs,
+                "Latitude": lat,
+                "Longitude": lon,
+                "Echo_Sounder": water_depth,
+                "Depth": real_depth
+            }
 
-#exporting as a CSV file to use in GIS softwares:
-xyz.to_csv('iate_clube_xyz.csv',index=False)
+            # Concatenate the single-row DataFrame
+            xyz_root = pd.concat([xyz_root, pd.DataFrame([new_row])], ignore_index=True)
+
+            # Increasing the time variable according to the time_step:
+            time_counter += time_step
+
+# Getting the xyz file (only coordinates and depth info)
+xyz = xyz_root[['Latitude', 'Longitude', 'Depth']]
+
+xyz.to_csv('106_xyz.csv', index=False)
